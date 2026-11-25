@@ -56,10 +56,10 @@ grep -v '^ *#' ../report/team/pilot_plan.yaml | grep -n '?'     # không in gì
 
 ## C · Hải
 
-1. [ ] `git pull`, gắn nhãn 20 ca của mình **trước khi** nhận nhãn của Tuấn Anh từ Đạt.
-2. [ ] `bang_loi.md`: hai bộ nhãn, tỉ lệ đồng thuận (cần từ 16/20), quy tắc cho ca lệch, bảng khắc phục 5 ca. Mỗi dòng có cách phát hiện đo được và một vai trò phụ trách.
-3. [ ] `chi_so.md`: tính thử 3 chỉ số, đề xuất thêm 1 chỉ số dùng và 1 chỉ số an toàn, từ 6 event có `trace_id`, kiểm tra chéo, từ 2 dòng rủi ro lấy số từ `bang_chi_phi.md`.
-4. [ ] `ho_so_launch_v0.md`: đủ 7 mục, cột trạng thái đúng ba giá trị, dòng cuối là Go / Go có điều kiện / No-go.
+1. [x] `git pull`, gắn nhãn 20 ca của mình **trước khi** nhận nhãn của Tuấn Anh từ Đạt.
+2. [x] `bang_loi.md`: hai bộ nhãn, tỉ lệ đồng thuận (cần từ 16/20), quy tắc cho ca lệch, bảng khắc phục 5 ca. Mỗi dòng có cách phát hiện đo được và một vai trò phụ trách.
+3. [x] `chi_so.md`: tính thử 3 chỉ số, đề xuất thêm 1 chỉ số dùng và 1 chỉ số an toàn, từ 6 event có `trace_id`, kiểm tra chéo, từ 2 dòng rủi ro lấy số từ `bang_chi_phi.md`.
+4. [x] `ho_so_launch_v0.md`: đủ 7 mục, cột trạng thái đúng ba giá trị, dòng cuối là Go / Go có điều kiện / No-go.
 5. [ ] `group_report.md`: ghi rõ nhóm chỉ có 3 người ở mục 5, và kết quả duyệt chéo thật ở mục 4.
 
 Cần để ý:
@@ -67,6 +67,8 @@ Cần để ý:
 - Nêu cả con số bất lợi (xem lại 100%, power ở mức 5 điểm) kèm cách xử lý, để được 10 điểm tiêu chí C6.
 
 **Xong khi:** hết checklist trong `SUBMISSION.md`; `grep -rni production report/team` không in gì.
+
+Báo cáo nhóm đã soạn; còn chờ kết quả duyệt chéo thực tế để chốt mục 4. Báo cáo cá nhân Hải và TEAM.md đã điền; Hải đọc lại trước khi nộp.
 
 ## Gắn nhãn độc lập khi làm nối tiếp
 

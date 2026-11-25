@@ -429,6 +429,17 @@ def bang_d3(runs, reqs):
         print(f'{tong_ngay} ngày, bỏ {bo}: m = {moi_ngay * (tong_ngay - bo):.0f}, hiệu dụng {n:.0f} → {"đủ" if n >= n6 else "KHÔNG đủ"} {n6}')
 
 
+
+def bang_e1(reqs):
+    """Ba chỉ số E1; chỉ mô tả đợt chạy thử, không suy luận nhân quả."""
+    tieu_de('E1 · Chỉ số trong đợt chạy thử (toàn mẫu)')
+    chinh = (reqs['dong_trong_24h'] == 1) & (reqs['mo_lai_trong_7_ngay'] == 0)
+    xem = reqs[reqs['duoc_xem_lai'] == 1]
+    bo = xem['quyet_dinh_xem_lai'].isin(['sua', 'bo'])
+    mo = reqs['mo_lai_trong_7_ngay'] == 1
+    for ten, cot in [('Chính', chinh), ('Bỏ qua gợi ý', bo), ('Mở lại 7 ngày', mo)]:
+        print(f'{ten}: {int(cot.sum())}/{len(cot)} = {cot.mean() * 100:.2f}%')
+
 if __name__ == '__main__':
     runs = pd.read_csv(THU_MUC / 'logix_runs.csv')
     reqs = pd.read_csv(THU_MUC / 'logix_requests.csv', keep_default_na=False)
@@ -441,3 +452,4 @@ if __name__ == '__main__':
     bang_b4(runs, reqs)
     bang_d1()
     bang_d3(runs, reqs)
+    bang_e1(reqs)

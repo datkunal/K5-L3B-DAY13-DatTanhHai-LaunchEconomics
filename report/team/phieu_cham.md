@@ -1,8 +1,10 @@
 # Phiếu chấm hội đồng Gate 2a
 
+**Trạng thái: Chưa thực hiện duyệt chéo.** Chưa có điểm, quyết định hoặc câu trả lời thực tế; Tuấn Anh sẽ cập nhật sau khi cả nhóm thống nhất.
+
 Nhóm số n chấm nhóm số n + 1; nhóm cuối chấm nhóm 1. Chấm theo bằng chứng trong hồ sơ, không theo cách trình bày: một đề xuất No-go có lý do bằng số được điểm cao hơn một đề xuất Go bỏ qua con số bất lợi.
 
-- Nhóm chấm (hội đồng): ...
+- Nhóm chấm (hội đồng): DatTanhHai · L3B
 - Nhóm được chấm: ...
 
 | Tiêu chí | 0 điểm | 5 điểm | 10 điểm | Điểm | Lý do (có số) |
