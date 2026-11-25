@@ -35,11 +35,11 @@ Các file hồ sơ nằm trong `report/team/`. Nếu coach vẫn duyệt chéo l
 
 ## B · Tuấn Anh
 
-1. [ ] `git pull`, chạy `cd src && python lab13.py` trên máy mình, tính tay một số để kiểm lại phần A.
+1. [x] `git pull`, chạy `cd src && python lab13.py` trên máy mình, tính tay một số để kiểm lại phần A.
 2. [ ] Gắn nhãn 20 ca (trong `docs/Ngay13_Lab13_De_bai_hoc_vien.docx`). **Chưa push, gửi riêng cho Đạt giữ.**
-3. [ ] Dòng `TODO CP4` trong `lab13.py`: tính 5 câu D1 (a–e).
-4. [ ] `pilot_plan.yaml`: ghi D1, D2 vào chú thích đầu file, điền mọi dấu `?`.
-5. [ ] Ít nhất 3 luật dừng (an toàn, chi phí, mức sử dụng), đủ bốn vế NẾU – TRONG – THÌ (ai làm) – KHÔNG THÌ.
+3. [x] Dòng `TODO CP4` trong `lab13.py`: tính 5 câu D1 (a–e).
+4. [x] `pilot_plan.yaml`: ghi D1, D2 vào chú thích đầu file, điền mọi dấu `?`.
+5. [x] Ít nhất 3 luật dừng (an toàn, chi phí, mức sử dụng), đủ bốn vế NẾU – TRONG – THÌ (ai làm) – KHÔNG THÌ.
 6. [ ] Sau duyệt chéo: điền `phieu_cham.md` theo điểm cả ba đã thống nhất.
 
 Cần để ý:

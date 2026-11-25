@@ -50,15 +50,19 @@ Mỗi thành viên đồng thời tạo một báo cáo riêng trong `report/tea
 
 ### Phần việc phụ trách
 
--
+- Nhiệm vụ D (CP4): cỡ mẫu D1, kế hoạch pilot.
+- Kiểm lại số phần A trên máy khác; gắn nhãn bộ 1 cho 20 ca lỗi (CP3); điền phiếu chấm sau duyệt chéo.
 
 ### Đóng góp cụ thể
 
--
+- `src/lab13.py`: các hàm cỡ mẫu và chi phí theo bậc xem lại, bảng D1 và D3.
+- `report/team/pilot_plan.yaml`: D1, D2, đánh đổi và toàn bộ các trường, 5 luật dừng.
 
 ### Bằng chứng
 
--
+- `cd src && python lab13.py` in D1: 1.251 · 3.103 (42 người mỗi nhóm) · 1.000 · 300 · 299.
+- Lịch sử commit của `Tanh0406` trên `src/lab13.py`, `report/team/pilot_plan.yaml`, `TEAM.md`.
+- Báo cáo cá nhân: `report/team/2A202603909_TranTuanAnh.md`.
 
 ## NguyenTrungHai-2A202603728
 
