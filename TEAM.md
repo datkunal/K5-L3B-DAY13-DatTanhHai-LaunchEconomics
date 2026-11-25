@@ -56,7 +56,8 @@ Mỗi thành viên đồng thời tạo một báo cáo riêng trong `report/tea
 ### Đóng góp cụ thể
 
 - `src/lab13.py`: các hàm cỡ mẫu và chi phí theo bậc xem lại, bảng D1 và D3.
-- `report/team/pilot_plan.yaml`: D1, D2, đánh đổi và toàn bộ các trường, 5 luật dừng.
+- `report/team/pilot_plan.yaml`: D1, D2, đánh đổi và toàn bộ các trường, 6 luật dừng.
+- `report/team/bang_loi.md`: bộ nhãn 1 cho 20 ca lỗi, tự gắn độc lập.
 
 ### Bằng chứng
 

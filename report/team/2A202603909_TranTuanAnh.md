@@ -13,20 +13,22 @@ Nhiệm vụ D (kế hoạch pilot), kiểm lại số phần A, gắn nhãn b�
 
 ## 3. Đóng góp cụ thể
 
-- `src/lab13.py`: các hàm `co_mau`, `he_so_thiet_ke`, `co_mau_hieu_dung`, `m_toi_thieu`, `power_khi`, `icc_anova`, `chi_phi_theo_xem_lai`; bảng D1 và D3.
+- `src/lab13.py`: các hàm `co_mau`, `he_so_thiet_ke`, `co_mau_hieu_dung`, `m_toi_thieu`, `power_khi`, `icc_anova`, `vuot_nguong`, `chi_phi_theo_xem_lai`; bảng D1 và D3.
 - `report/team/pilot_plan.yaml`: D1, D2, đánh đổi, và toàn bộ các trường.
+- `report/team/bang_loi.md`: bộ nhãn 1 cho 20 ca lỗi, tự đọc và tự gắn độc lập.
 
-Bốn ý chính từ phần việc:
+Năm ý chính từ phần việc:
 
 - **Vì sao số cụm quyết định, không phải tổng số yêu cầu:** hiệu dụng = c × m ÷ (1 + (m − 1) × ICC), khi m rất lớn chỉ tiến tới c ÷ ICC. 20 nhân viên mỗi nhóm tối đa 20 ÷ 0,02 = 1.000, dưới 1.251, nên chạy thêm bao lâu cũng không thấy được mức chênh 5 điểm.
 - **Vì sao vẫn chọn chia theo nhân viên:** chia theo yêu cầu đủ 1.251 nhưng một người vừa dùng vừa không dùng trợ lý, đối chứng không còn sạch. Đánh đổi là chỉ bảo đảm thấy mức 6 điểm; ở 5 điểm power chỉ 0,64.
 - **Vì sao bước 0.50 dài 14 ngày:** trong phạm vi mỗi người có 30,7 yêu cầu/ngày, 299 yêu cầu cần 9,7 ngày; một tuần chỉ được 215.
 - **Vì sao ngưỡng mở lại là +2 điểm và trần 6%:** hiện tại đã 4,25% (phạm vi 3,97%), đặt 1–3% thì dừng ngay tuần đầu. Cả 39 ca mở lại trong phạm vi đều không được xem lại, nên bước 0.10 xem lại 100% rồi mới giảm theo bậc.
+- **Vì sao cần thêm luật 6:** mở lại trong 7 ngày chỉ có số từ 15/12, không bảo vệ được bước 0.10. Luật 6 dùng tỉ lệ gợi ý sai khi xem lại 100% (đợt chạy thử 5,06%, ngưỡng 10%), có số ngay sau 3 ngày.
 
 ## 4. Bằng chứng
 
 - `cd src && python lab13.py`: in D1 (1.251 · 3.103 và 42 người · 1.000 · 300 · 299) và bảng D3.
-- `pilot_plan.yaml` đọc được bằng `yaml.safe_load`, không còn dấu hỏi ngoài chú thích, có 5 luật dừng đủ bốn vế.
+- `pilot_plan.yaml` đọc được bằng `yaml.safe_load`, không còn dấu hỏi ngoài chú thích, có 6 luật dừng đủ bốn vế.
 - Con số bất lợi đã nêu: bước 0.10 xem lại 100% và cộng chi phí cố định là 24.267 đ = 2,02× [simulated]; `hang_nang` xem lại 100% là 16.638 đ = 1,39× [simulated]; ICC từ 0,0233 thì không đủ mẫu cho 6 điểm.
 - Commit của `Tanh0406` trên `src/lab13.py`, `report/team/pilot_plan.yaml`, `TEAM.md`.
 
@@ -40,5 +42,5 @@ Bốn ý chính từ phần việc:
 
 ## 6. Tự đánh giá
 
-- **Làm được:** năm câu D1 khớp đáp án; kế hoạch có đối chứng cùng lúc, 20 cụm mỗi nhóm, 5 luật dừng có ngưỡng, thời hạn và người có quyền dừng; nêu rõ đánh đổi và con số bất lợi.
+- **Làm được:** năm câu D1 khớp đáp án; kế hoạch có đối chứng cùng lúc, 20 cụm mỗi nhóm, 6 luật dừng có ngưỡng, thời hạn và người có quyền dừng; nêu rõ đánh đổi và con số bất lợi.
 - **Hạn chế:** không đủ mẫu cho mức 5 điểm. Baseline 0,70 là của mọi loại yêu cầu, chưa có số đối chứng riêng cho phạm vi. Chi phí theo bậc xem lại dựa trên phút simulated và coi tỉ lệ sai như đợt chạy thử. Ngưỡng 70% và 2% là giả định của nhóm, chưa có dữ liệu.
