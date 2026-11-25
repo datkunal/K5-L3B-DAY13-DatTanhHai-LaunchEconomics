@@ -4,7 +4,7 @@
 
 - Họ tên: Trần Tuấn Anh
 - MSSV: 2A202603909
-- Email:
+- Email: 26ai.anhtt6@vinuni.edu.vn
 - Vai trong nhóm: người kiểm số, viết code D1, người gắn nhãn 1 (nhóm 3 người)
 
 ## 2. Phần việc phụ trách

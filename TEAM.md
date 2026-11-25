@@ -12,7 +12,7 @@
 | STT | Họ tên | MSSV | Email | GitHub | Vai trò |
 | --: | ------ | ---- | ----- | ------ | ------- |
 |   1 | Vũ Tuấn Đạt | 2A202603744 | 26ai.datvt@vinuni.edu.vn | datkunal | Nhóm trưởng, người viết code (nhiệm vụ A, B) |
-|   2 | Trần Tuấn Anh | 2A202603909 |  | Tanh0406 | Người kiểm số, viết code D1, người gắn nhãn 1 (nhiệm vụ D) |
+|   2 | Trần Tuấn Anh | 2A202603909 | 26ai.anhtt6@vinuni.edu.vn | Tanh0406 | Người kiểm số, viết code D1, người gắn nhãn 1 (nhiệm vụ D) |
 |   3 | Nguyễn Trung Hải | 2A202603728 |  | nguyentrunghai7 | Người gắn nhãn 2, kiêm giữ hồ sơ (nhiệm vụ C, E) |
 
 Nhóm có 3 người nên gộp bốn vai của lab. Vẫn giữ hai người gắn nhãn khác nhau cho CP3; người viết code (Đạt) không gắn nhãn. Người viết code đổi từ Đạt (A, B) sang Tuấn Anh (D1), nên ít nhất hai người tự tay tính được.
