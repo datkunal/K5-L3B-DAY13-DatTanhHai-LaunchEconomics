@@ -28,10 +28,10 @@ Các file hồ sơ nằm trong `report/team/`. Nếu coach vẫn duyệt chéo l
 
 ## A · Đạt
 
-- [ ] Phần chung trong `TEAM.md`
-- [ ] Ba hàm A1, `mo_hinh`, A3, A4, B1–B4 trong `src/lab13.py`
-- [ ] `bang_chi_phi.md` đủ A1–A4, B1–B4
-- [ ] **Bàn giao khi:** `python lab13.py` chạy hết, in ĐẠT, ra 4.472; `bang_chi_phi.md` không còn `...`
+- [x] Phần chung trong `TEAM.md`
+- [x] Ba hàm A1, `mo_hinh`, A3, A4, B1–B4 trong `src/lab13.py`
+- [x] `bang_chi_phi.md` đủ A1–A4, B1–B4
+- [x] **Bàn giao khi:** `python lab13.py` chạy hết, in ĐẠT, ra 4.472; `bang_chi_phi.md` không còn `...`
 
 ## B · Tuấn Anh
 
