@@ -13,7 +13,7 @@
 #   1. Đối chứng chạy cùng thời gian: có; 20 nhân viên đối chứng làm cùng ngày, cùng 12 depot, từ 07/12/2026 đến 03/01/2027.
 #   2. Chia ngẫu nhiên hay do người chọn: ngẫu nhiên; bốc thăm bằng code với seed 20261125 ghi trước, phân tầng theo depot (nên cân cả 6 depot đã chạy thử); yêu cầu được hệ thống ticket chia đều, nhân viên không tự chọn.
 #   3. Ảnh hưởng gián tiếp và cách giảm: có rủi ro; 20/40 nhân viên đã dùng trợ lý ở đợt chạy thử. Rút quyền nhóm đối chứng từ 30/11, quyền theo tài khoản, log lượt mở theo staff_id, dừng nếu quá 2% (luật 5).
-#   4. Chỉ số chính, ngưỡng, ngày quyết định đã viết trước: có; nằm trong file này, chốt bằng commit trước ngày 07/12/2026, ngày quyết định 13/01/2027.
+#   4. Chỉ số chính, ngưỡng, ngày quyết định đã viết trước: có; nằm trong file này, chốt bằng commit trước ngày 07/12/2026, ngày quyết định 13/01/2027 (chỉ dời sang 20/01/2027 nếu chạm luật 5).
 #   5. Ít nhất 20 cụm mỗi nhóm: có, đúng 20 nhân viên mỗi nhóm.
 #
 # Đánh đổi đã chấp nhận (cách chia đạt "tách được tác động" nhưng chưa đủ mẫu cho 5 điểm):
@@ -23,6 +23,7 @@
 #   - Baseline 0,70 là của mọi loại yêu cầu; riêng phạm vi này chưa có số đối chứng. Chỉ số chính trong đợt chạy thử ở phạm vi là 92,26% (906/982), không có đối chứng nên không so với 0,70.
 #     Vì vậy bước 0.10 đo riêng nhóm đối chứng: nếu trên 87% thì mức +5 điểm khó đạt, Giám đốc vận hành phải chốt lại mục tiêu trước 21/12.
 #   - Mỗi bước một tuần không đủ: mỗi người chỉ có 30,7 yêu cầu/ngày trong phạm vi, 299 yêu cầu cần 9,7 ngày. Bước 0.50 kéo dài 14 ngày (m = 429, hiệu dụng 897), cộng 8 ngày chờ đóng và mở lại.
+#     Cần ít nhất 10 ngày sạch (hiệu dụng 862); 14 ngày bỏ được tối đa 4 ngày bị nhiễm. Bỏ 7 ngày chỉ còn 814 < 859, kéo dài thành 21 ngày rồi bỏ 7 thì lại đủ 898 (luật 5).
 #   - Pilot không tiết kiệm tiền khi còn nhỏ: ở bước 0.10 xem lại 100%, chi phí mỗi việc thành công là 12.415 đ, cộng chi phí cố định 11.852 đ thành 24.267 đ = 2,02× [simulated]. Đây là tiền mua thông tin.
 #
 # Tỉ lệ mo_lai_trong_7_ngay hiện tại và ngưỡng an toàn đã chọn:
@@ -30,7 +31,11 @@
 #   - Ngưỡng chọn: cao hơn đối chứng từ 2 điểm, hoặc vượt trần tuyệt đối 6% (khoảng 1,5 lần mức 3,97%).
 #   - Kiểm soát thêm: 39/39 ca bị mở lại trong phạm vi đều không được xem lại, còn 9/9 ca sai được xem lại không bị mở lại. Do đó bước 0.10 xem lại 100%,
 #     sau đó giảm theo bậc cho noi_dia; hang_nang giữ 100% vì tỉ lệ sai 13,3% (18/135) so với noi_dia 3,7% (30/813). Lỗi lọt dự kiến 0% → 1,5% → 2,3%.
-#   - Với ICC 0,02, khả năng chạm ngưỡng "+2 điểm" chỉ do ngẫu nhiên là 11,6% ở bước 0.10, 4,6% ở 0.25, 1,5% ở 0.50. Chấp nhận dừng nhầm ở bước đầu vì chỉ ảnh hưởng 4 nhân viên.
+#   - Với ICC 0,02, khả năng chạm ngưỡng chỉ do ngẫu nhiên: "+2 điểm" là 11,6% · 4,6% · 1,5% và trần 6% là 9,2% · 1,8% · 0,1% (bước 0.10 · 0.25 · 0.50).
+#     Chấp nhận dừng nhầm nhiều hơn ở bước đầu vì chỉ ảnh hưởng 4 nhân viên.
+#   - Luật 1 chỉ có số từ 15/12 (yêu cầu ngày 07/12 đóng trong 24 giờ rồi chờ đủ 7 ngày), tức là chưa bảo vệ được bước 0.10. Bước này dùng luật 2 và luật 6.
+#   - Luật 6 đo ngay khi xem lại 100%: tỉ lệ gợi ý sai trong đợt chạy thử là 5,06% (48/948), ngưỡng 10% khoảng gấp đôi (làm lại gấp đôi thì chi phí +51,8% [simulated]).
+#     Sau 3 ngày có khoảng 356 yêu cầu: dừng nhầm 0,5% nếu tỉ lệ sai thật 5,1%; bắt được 94,4% nếu tỉ lệ sai thật 15%, nhưng chỉ 50% nếu thật đúng 10%.
 
 pilot:
   owner: "Giám đốc vận hành LogiX-VN"
@@ -63,11 +68,12 @@ pilot:
     spillover_risk: "Cao nếu không chặn: 20/40 nhân viên đã dùng trợ lý ở đợt chạy thử và hai nhóm ngồi chung depot. Giảm bằng: rút quyền nhóm đối chứng từ 30/11, bật quyền theo tài khoản, log lượt mở theo staff_id, dừng nếu trên 2% yêu cầu đối chứng có lượt mở trợ lý"
     predeclared: "Có: chỉ số chính, mde, ngưỡng dừng, cách phân tích, seed và ngày quyết định chốt bằng commit của file này trước 07/12/2026; đổi sau đó phải có chữ ký của Giám đốc vận hành và ghi lý do"
   stop_rules:
-    - "NẾU tỉ lệ mở lại trong 7 ngày của nhóm trợ lý cao hơn đối chứng từ 2 điểm hoặc vượt 6% (tính trượt 7 ngày, trên yêu cầu đã đóng đủ 7 ngày) TRONG 3 ngày liên tiếp THÌ Trưởng ca CSKH tắt trợ lý trong 30 phút, không cần chờ họp, và PM trợ lý hoàn phí rà 20 trace mở lại trong 2 ngày KHÔNG THÌ không được sang bước tiếp hoặc giảm tỉ lệ xem lại"
+    - "NẾU tỉ lệ mở lại trong 7 ngày của nhóm trợ lý cao hơn đối chứng từ 2 điểm hoặc vượt 6% (tính trượt 7 ngày, trên yêu cầu đã đóng đủ 7 ngày, có số từ 15/12/2026) TRONG 3 ngày liên tiếp THÌ Trưởng ca CSKH tắt trợ lý trong 30 phút, không cần chờ họp, và PM trợ lý hoàn phí rà 20 trace mở lại trong 2 ngày KHÔNG THÌ không được sang bước tiếp hoặc giảm tỉ lệ xem lại"
     - "NẾU có từ 1 ca hoàn tiền trùng, hoặc báo khách đã hoàn mà sổ cái không có bản ghi ok cùng trace_id, TRONG một lần đối soát mỗi giờ THÌ Trưởng ca CSKH tắt trợ lý trong 30 phút, Kỹ sư trưởng agent sửa và chạy lại test khoá chống trùng KHÔNG THÌ không được bật lại khi Giám đốc vận hành chưa ký"
     - "NẾU chi phí biến đổi mỗi việc thành công (phút đo thật, chưa gồm cố định) vượt 8.000 đ ở bước 0.50, hoặc số phút xem lại trung bình đo thật từ 6 phút trở lên ở bất kỳ bước nào, TRONG 7 ngày liên tiếp THÌ PM trợ lý hoàn phí dừng mở rộng, thu hẹp về noi_dia và giới hạn 2 lần chạy trong 2 ngày KHÔNG THÌ không được giảm tỉ lệ xem lại để kéo chi phí xuống"
     - "NẾU tỉ lệ bỏ qua gợi ý (sửa hoặc bỏ) vượt 40%, hoặc dưới 70% yêu cầu trong phạm vi của nhóm trợ lý được mở bằng trợ lý, TRONG 7 ngày liên tiếp THÌ Trưởng nhóm CSKH phỏng vấn 5 nhân viên và cắt số theo loại yêu cầu trong 3 ngày KHÔNG THÌ không được sang bước tiếp"
-    - "NẾU trên 2% yêu cầu của nhóm đối chứng có lượt mở trợ lý TRONG 7 ngày liên tiếp THÌ Trưởng ca CSKH khoá quyền các tài khoản đó trong ngày và kéo dài bước 0.50 thêm 7 ngày KHÔNG THÌ không được dùng số của các ngày bị nhiễm để kết luận"
+    - "NẾU trên 2% yêu cầu của nhóm đối chứng có lượt mở trợ lý TRONG 7 ngày liên tiếp THÌ Trưởng ca CSKH khoá quyền các tài khoản đó trong ngày, bỏ các ngày bị nhiễm ở cả hai nhóm, và nếu bước 0.50 còn dưới 10 ngày sạch thì kéo dài đúng một lần thêm 7 ngày, ngày quyết định thành 20/01/2027 KHÔNG THÌ không được dùng số của các ngày bị nhiễm để kết luận; nếu sau khi kéo dài vẫn dưới 10 ngày sạch thì kết luận là không đủ bằng chứng để mở rộng"
+    - "NẾU tỉ lệ gợi ý sai (nhân viên ghi sai tiền hoặc sai chính sách, trên yêu cầu được xem lại) vượt 10% ở bước 0.10 TRONG 3 ngày liên tiếp THÌ Trưởng ca CSKH tắt trợ lý trong 30 phút, PM trợ lý hoàn phí rà toàn bộ ca sai theo loại yêu cầu trong 2 ngày KHÔNG THÌ không được sang bước 0.25 hoặc giảm tỉ lệ xem lại"
   interim_looks: "chỉ kiểm tra chỉ số an toàn"
   rollback: "Trưởng ca CSKH bấm cờ tắt (Giám đốc vận hành cũng có quyền), hiệu lực trong 30 phút; gợi ý chưa gửi bị huỷ, yêu cầu đang xử lý chuyển nhân viên kèm tóm tắt; khách được phục vụ bằng luồng nhân viên tự làm, 30,7 yêu cầu × 6 phút = khoảng 184 phút mỗi người mỗi ngày nên đủ người"
   start_conditions:               # thiếu một điều kiện thì lùi cả lịch theo tuần chẵn và chốt lại ngày quyết định trước khi bắt đầu
@@ -75,8 +81,9 @@ pilot:
     - "Event có trace_id bật đủ, phút xem lại và làm lại được đo thật; kiểm tra 04/12/2026; PM trợ lý hoàn phí"
     - "Danh sách 20 + 20 đã bốc thăm, quyền nhóm đối chứng đã rút; kiểm tra 04/12/2026; Trưởng nhóm CSKH"
     - "Ký chấp nhận mức chênh 6 điểm và power 0,64 ở mức 5 điểm; kiểm tra 04/12/2026; Giám đốc vận hành"
-  decision_rule: "Mở rộng chỉ khi chênh lệch đo được từ 5 điểm trở lên, khoảng tin cậy 95% nằm trên 0, không luật an toàn nào đang bị chạm và chi phí biến đổi đo thật không quá 8.000 đ. hang_nang chỉ được mở rộng nếu tỉ lệ gợi ý sai đo được không quá 7% (đợt chạy thử 13,3%), vì phải xem lại 100% thì riêng loại này là 16.638 đ = 1,39× [simulated]. Không đủ điều kiện thì giữ nguyên hoặc dừng, không kéo dài để chờ kết quả đẹp"
+  decision_rule: "Mở rộng chỉ khi chênh lệch đo được từ 5 điểm trở lên, khoảng tin cậy 95% nằm trên 0, không luật an toàn nào đang bị chạm và chi phí biến đổi đo thật không quá 8.000 đ. hang_nang chỉ được mở rộng nếu tỉ lệ gợi ý sai đo được không quá 7% (đợt chạy thử 13,3%), vì phải xem lại 100% thì riêng loại này là 16.638 đ = 1,39× [simulated]. Không đủ điều kiện thì giữ nguyên hoặc dừng, không kéo dài để chờ kết quả đẹp; luật 5 là lý do kéo dài duy nhất được phép, tối đa một lần, và quyết định kéo dài không dựa vào chênh lệch đang đo"
   decision_date: "2027-01-13"
+  decision_date_if_rule_5: "2027-01-20"   # đo đến 10/01, chờ đến 18/01, phân tích 19/01
   simulated_inputs:
     - "phut_xem_lai_simulated: 890 phút toàn mẫu"
     - "phut_lam_lai_simulated: 1.132 phút toàn mẫu, trung bình 15,3 phút mỗi ca làm lại"
@@ -86,4 +93,4 @@ pilot:
     - "hang_nang xem lại 100%: 16.638 đ (1,39×)"
     - "Trần 9.630 đ dùng để chọn ngưỡng chi phí 8.000 đ"
     - "Giả định của đề, không đo: 5 phút mỗi lần xem lại, 9 phút mỗi ca làm lại, 2.000 đ mỗi phút, 12.000 đ mỗi yêu cầu nhân viên tự làm, 40 triệu đ cố định mỗi tháng, ICC 0,02, baseline 0,70"
-    - "Giả định của nhóm, không đo: ngưỡng 70% yêu cầu được mở bằng trợ lý và 2% nhiễm đối chứng"
+    - "Giả định của nhóm, không đo: ngưỡng 70% yêu cầu được mở bằng trợ lý, 2% nhiễm đối chứng; ICC 0,02 dùng cho cả tỉ lệ mở lại và tỉ lệ gợi ý sai"
