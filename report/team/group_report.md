@@ -21,7 +21,11 @@ Ba phép thử A1 đạt. CPS toàn mẫu 4.472 đ; CPS trong phạm vi 3.414 đ
 
 Đề xuất Go có điều kiện cho noi_dia + hang_nang. Bước 10% gồm cố định 24.267 đ = 2,02×; hang_nang xem lại 100% 16.638 đ = 1,39× [simulated]. Phải đo phút thật và kiểm soát lỗi trước giảm xem lại. Pilot 20 + 20 đủ mục tiêu 6 điểm theo giả định ICC 0,02; tác động 5 điểm chỉ có power 0,64.
 
-Duyệt chéo: chưa thực hiện theo xác nhận của Hải; chưa có điểm hoặc nhận xét từ hội đồng, chưa có điểm nhóm chấm nhóm khác. Phiếu chấm giữ trạng thái chờ, không tự tạo kết quả.
+Duyệt chéo Gate 2a ngày 25/11/2026:
+
+- **Nhóm nhận được từ hội đồng:** 30/30 (ba tiêu chí, mỗi tiêu chí 10 điểm), quyết định Go có điều kiện.
+- **Câu hỏi của hội đồng:** hang_nang tốn 16.638 đ/việc thành công khi xem lại 100% [simulated], cao hơn làm tay 12.000 đ; vì sao vẫn giữ trong pilot, và nếu cuối pilot tỉ lệ gợi ý sai vẫn trên 7% thì quyết định thế nào. Theo `pilot_plan.yaml`, giữ để đo tỉ lệ sai (đợt chạy thử 13,3%) và chỉ mở rộng hang_nang nếu không quá 7%.
+- **Nhóm chấm nhóm khác:** Nhom4Nguoi, 30/30, Go có điều kiện; lý do, câu hỏi và câu trả lời của họ ở `phieu_cham.md`.
 
 ## 5. Khó khăn và cách xử lý
 
