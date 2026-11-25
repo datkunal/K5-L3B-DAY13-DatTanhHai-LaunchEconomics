@@ -22,18 +22,18 @@ Mọi event có `trace_id`, `request_id`, `event_id`, `occurred_at`; bảng phâ
 
 | Event | Ai tạo | Thuộc tính bổ sung | Thời điểm |
 | --- | --- | --- | --- |
-| refund_request_created | Hệ thống ticket | loai, staff_id, arm, depot, created_at | Nhận yêu cầu |
-| agent_opened | Giao diện nhân viên | staff_id, arm | Mở trợ lý, kể cả tài khoản đối chứng |
-| agent_run_completed | Agent | attempt, tokens_in, tokens_out, tool_calls, status | Sau mọi lần chạy |
-| agent_suggestion_shown | Giao diện nhân viên | suggestion_id, staff_id, so_tien_de_xuat | Hiển thị gợi ý |
-| staff_review_decision | Giao diện nhân viên | suggestion_id, giu/sua/bo, phut_xem_lai đo thật, final, reason (sai_tien/sai_chinh_sach/khac), is_incorrect | Chốt xem lại |
-| staff_rework_completed | Giao diện nhân viên | phut_lam_lai đo thật, reason | Xong làm lại |
-| refund_ledger_write | Dịch vụ sổ cái | idempotency_key, amount, result, policy_version | Mỗi lần ghi sổ |
-| handoff_to_staff | Agent | reason, summary | Chuyển nhân viên |
-| category_mismatch_detected | Giao diện tiếp nhận | category_selected, category_inferred, confirmed_category | Phát hiện mục chọn không khớp mô tả |
-| ticket_closed | Hệ thống ticket | closed_at | Đóng yêu cầu |
-| ticket_reopened | Hệ thống ticket | reopened_at, reason | Mở lại |
-| audit_sample_checked | Kế toán | sample_id, selection_probability, amount_actual, amount_correct, policy_version | Kiểm tra mẫu mỗi tuần |
+| refund_request_created | Hệ thống ticket | loai, staff_id, arm, depot, created_at, trace_id | Nhận yêu cầu |
+| agent_opened | Giao diện nhân viên | staff_id, arm, trace_id | Mở trợ lý, kể cả tài khoản đối chứng |
+| agent_run_completed | Agent | attempt, tokens_in, tokens_out, tool_calls, status, trace_id | Sau mọi lần chạy |
+| agent_suggestion_shown | Giao diện nhân viên | suggestion_id, staff_id, so_tien_de_xuat, trace_id | Hiển thị gợi ý |
+| staff_review_decision | Giao diện nhân viên | suggestion_id, giu/sua/bo, phut_xem_lai đo thật, final, reason (sai_tien/sai_chinh_sach/khac), is_incorrect, trace_id | Chốt xem lại |
+| staff_rework_completed | Giao diện nhân viên | phut_lam_lai đo thật, reason, trace_id | Xong làm lại |
+| refund_ledger_write | Dịch vụ sổ cái | idempotency_key, amount, result, policy_version, trace_id | Mỗi lần ghi sổ |
+| handoff_to_staff | Agent | reason, summary, trace_id | Chuyển nhân viên |
+| category_mismatch_detected | Giao diện tiếp nhận | category_selected, category_inferred, confirmed_category, trace_id | Phát hiện mục chọn không khớp mô tả |
+| ticket_closed | Hệ thống ticket | closed_at, trace_id | Đóng yêu cầu |
+| ticket_reopened | Hệ thống ticket | reopened_at, reason, trace_id | Mở lại |
+| audit_sample_checked | Kế toán | sample_id, selection_probability, amount_actual, amount_correct, policy_version, trace_id | Kiểm tra mẫu mỗi tuần |
 
 arm lấy từ bảng phân công đã chốt, nhận giá trị treatment/control; không suy ra arm từ việc có mở trợ lý. reason bắt buộc khi sửa/bỏ; is_incorrect ghi rõ lỗi tiền/chính sách, vì sửa văn phong không đồng nghĩa gợi ý sai.
 
