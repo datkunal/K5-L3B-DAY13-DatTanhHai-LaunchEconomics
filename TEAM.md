@@ -69,15 +69,19 @@ Mỗi thành viên đồng thời tạo một báo cáo riêng trong `report/tea
 
 ### Phần việc phụ trách
 
-- Người gắn nhãn 2, kiêm giữ hồ sơ; nhiệm vụ C và E.
+- Nhiệm vụ E (CP5): chỉ số, event, rủi ro kinh tế và hồ sơ launch v0.
+- Giữ hồ sơ của nhóm: rà tính nhất quán giữa bảng lỗi, pilot plan và hồ sơ; viết báo cáo nhóm.
 
 ### Đóng góp cụ thể
 
-- Bộ nhãn Hải trong bang_loi.md; tổng hợp chỉ số, 12 event và rủi ro tại chi_so.md.
-- Bảng E1 trong src/lab13.py; hồ sơ launch v0, báo cáo nhóm và báo cáo cá nhân với Codex hỗ trợ.
+- `report/team/chi_so.md`: 3 chỉ số tính thử, 2 chỉ số tự đề xuất, 12 event có `trace_id`, bảng đối chiếu event với chỉ số và luật dừng, 4 rủi ro kinh tế.
+- `report/team/ho_so_launch_v0.md`: hồ sơ 7 mục, điều kiện pilot có người phụ trách và ngày kiểm tra, đề xuất Go có điều kiện.
+- `src/lab13.py`: hàm `bang_e1`, in tử số, mẫu số và tỉ lệ của ba chỉ số.
+- `report/team/group_report.md`: báo cáo nhóm.
+- Soạn thảo có Codex hỗ trợ, khai báo ở mục 5 báo cáo cá nhân.
 
 ### Bằng chứng
 
-- bang_loi.md: hai bộ nhãn trùng 20/20 = 100%; không chỉnh bộ nhãn ban đầu.
-- E1: 82,83% · 27,12% · 4,25%; hồ sơ đủ 7 mục và đề xuất Go có điều kiện.
-- Báo cáo: report/team/2A202603728_NguyenTrungHai.md. Chưa có kết quả duyệt chéo.
+- `cd src && python lab13.py` in E1: 994/1.200 = 82,83% · 48/177 = 27,12% · 51/1.200 = 4,25%.
+- Commit `9c6dd99` của `nguyentrunghai7` trên `chi_so.md`, `ho_so_launch_v0.md`, `group_report.md`, `src/lab13.py`.
+- Báo cáo cá nhân: `report/team/2A202603728_NguyenTrungHai.md`.
