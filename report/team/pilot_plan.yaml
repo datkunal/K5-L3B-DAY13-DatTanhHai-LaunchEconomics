@@ -18,6 +18,8 @@
 #
 # Đánh đổi đã chấp nhận (cách chia đạt "tách được tác động" nhưng chưa đủ mẫu cho 5 điểm):
 #   - Chỉ bảo đảm thấy được mức chênh 6 điểm. Nếu tác động thật là 5 điểm thì power chỉ 0,64 (0,66 khi đo đủ 14 ngày), tức khoảng 1/3 khả năng bỏ lỡ.
+#   - Luật quyết định (decision_rule) đòi chênh lệch đo được từ 5 điểm nên chặt hơn kiểm định thường: khả năng qua luật là 0,50 nếu tác động thật 5 điểm
+#     và 0,68 nếu 6 điểm, thấp hơn power 0,64 và 0,80 (hiệu dụng 859). Chấp nhận bỏ lỡ nhiều hơn để không mở rộng khi chưa đo được mức kinh doanh cần.
 #   - Không chọn chia theo yêu cầu dù đủ 1.251, vì một người vừa dùng vừa không dùng trợ lý sẽ học cách trả lời, đối chứng không còn sạch.
 #   - Phụ thuộc ICC: từ 0,0233 trở lên thì 20 người mỗi nhóm không bao giờ đủ 859. ICC ước lượng từ đợt chạy thử là −0,003 (20 nhân viên), nên 0,02 là giả định thận trọng.
 #   - Baseline 0,70 là của mọi loại yêu cầu; riêng phạm vi này chưa có số đối chứng. Chỉ số chính trong đợt chạy thử ở phạm vi là 92,26% (906/982), không có đối chứng nên không so với 0,70.
@@ -39,7 +41,7 @@
 
 pilot:
   owner: "Giám đốc vận hành LogiX-VN"
-  scope: "Chỉ noi_dia và hang_nang (0,22× và 0,69× so với 12.000 đ [simulated]), 12 depot, 40 nhân viên CSKH. Loại quoc_te (1,88× [simulated], thành công 27,3%) và doi_tac (0,85× [simulated], chỉ 68 yêu cầu trong mẫu, có điều khoản riêng): hai loại này nhân viên làm như cũ ở cả hai nhóm"
+  scope: "Chỉ noi_dia và hang_nang (0,22× và 0,69× so với 12.000 đ [simulated]), 12 depot, 40 nhân viên CSKH. Con số bất lợi: hang_nang ở mức xem lại 100% của pilot là 16.638 đ = 1,39× [simulated]; giữ trong pilot để đo tỉ lệ gợi ý sai, chỉ mở rộng nếu không quá 7%. Loại quoc_te (1,88× [simulated], thành công 27,3%) và doi_tac (0,85× [simulated], chỉ 68 yêu cầu trong mẫu, có điều khoản riêng): hai loại này nhân viên làm như cũ ở cả hai nhóm"
   assignment:
     unit: "staff"
     control_share: 0.5

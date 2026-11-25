@@ -359,6 +359,10 @@ def bang_d3(runs, reqs):
     print(f'Bước 0.50 dài {SO_NGAY_DO} ngày: m = {m_do} · DE {he_so_thiet_ke(m_do):.2f} · hiệu dụng {n_do:.0f} mỗi nhóm')
     print(f'Power ở 5 điểm: {power_khi(n6, P_GOC, P_GOC + 0.05):.2f} (hiệu dụng {n6}) · '
           f'{power_khi(n_do, P_GOC, P_GOC + 0.05):.2f} (hiệu dụng {n_do:.0f}) · ở 6 điểm {power_khi(n_do, P_GOC, P_GOC + 0.06):.2f}')
+    for that in (MDE_MUC_TIEU, MDE_CHON):
+        phuong_sai = (P_GOC * (1 - P_GOC) + (P_GOC + that) * (1 - P_GOC - that)) / n6
+        print(f'Khả năng chênh lệch đo được >= {MDE_MUC_TIEU * 100:.0f} điểm (decision_rule, hiệu dụng {n6}) nếu tác động thật '
+              f'{that * 100:.0f} điểm: {vuot_nguong(MDE_MUC_TIEU, that, phuong_sai):.2f}')
     print(f'ICC từ {CUM_MOI_NHOM / n6:.4f} trở lên thì 20 nhân viên mỗi nhóm không bao giờ đủ {n6}; '
           f'ICC 0,03 tối đa {CUM_MOI_NHOM / 0.03:.0f}')
     print(f"ICC ước lượng từ đợt chạy thử (chỉ số chính, trong phạm vi): {icc_anova(pham_vi, 'chinh', 'staff_id'):.4f} "
