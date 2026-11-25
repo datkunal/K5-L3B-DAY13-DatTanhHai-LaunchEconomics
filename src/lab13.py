@@ -2,13 +2,16 @@
 Chạy trong thư mục src/: python3 lab13.py   (cần pandas; Nhiệm vụ D cần thêm statsmodels)
 Không cần khoá API. Dữ liệu trong hai file CSV là giả lập.
 Bản gốc chưa sửa nằm ở lab13_starter.py.
-Cách chia hàm mo_hinh và các kịch bản B1 dựa theo docs/Lab13_Huong_dan_chi_tiet_buoi_chieu.md.
+Cách chia hàm mo_hinh, các kịch bản B1 và hàm co_mau dựa theo docs/Lab13_Huong_dan_chi_tiet_buoi_chieu.md.
 """
 import math
 import sys
 from pathlib import Path
+from statistics import NormalDist
 
 import pandas as pd
+from statsmodels.stats.power import NormalIndPower
+from statsmodels.stats.proportion import proportion_effectsize
 
 if hasattr(sys.stdout, 'reconfigure'):      # cửa sổ lệnh Windows mặc định có thể không in được tiếng Việt
     sys.stdout.reconfigure(encoding='utf-8')
@@ -27,6 +30,17 @@ LOAI = ['noi_dia', 'hang_nang', 'quoc_te', 'doi_tac']
 PHAM_VI = ['noi_dia', 'hang_nang']      # phạm vi đề xuất cho pilot, lý do ở bảng A3
 PHUT_XEM_LAI_B4 = 5             # phút xem lại mỗi yêu cầu chạy ok (đề bài B4)
 PHUT_LAM_LAI_B4 = 9             # phút làm lại mỗi ca sai (đề bài B4)
+
+# Nhiệm vụ D · số cho sẵn trong đề
+P_GOC, MDE_MUC_TIEU, MDE_CHON = 0.70, 0.05, 0.06
+ALPHA, POWER, ICC = 0.05, 0.8, 0.02
+SO_NHAN_VIEN = 40
+CUM_MOI_NHOM = 20               # 20 nhân viên dùng trợ lý, 20 nhân viên đối chứng
+SO_NGAY_DO = 14                 # số ngày của bước 0.50, bước duy nhất dùng để đo chỉ số chính
+# Các bước mở dần của pilot: (phần nhân viên dùng trợ lý, tỉ lệ xem lại theo loại), khớp pilot_plan.yaml
+BUOC_MO = [(0.10, dict(noi_dia=1.00, hang_nang=1.0)),
+           (0.25, dict(noi_dia=0.50, hang_nang=1.0)),
+           (0.50, dict(noi_dia=0.25, hang_nang=1.0))]
 
 
 # ---------- Nhiệm vụ A1 · Kinh tế của việc chạy lại ----------
@@ -245,6 +259,151 @@ def bang_b4(runs, reqs):
         print(f'    cộng chi phí cố định {co_dinh:,.0f} đ/việc (45.000 yêu cầu/tháng): {day_du:,.0f} đ ({day_du / BASELINE:.2f}x)')
 
 
+# ---------- Nhiệm vụ D · Cỡ mẫu và số đầu vào cho pilot_plan.yaml ----------
+def co_mau(p1, p2, alpha=ALPHA, power=POWER):
+    """Cỡ mẫu mỗi nhóm khi so hai tỉ lệ, kiểm định hai phía, chia theo từng yêu cầu."""
+    z_a, z_b = NormalDist().inv_cdf(1 - alpha / 2), NormalDist().inv_cdf(power)
+    p_tb = (p1 + p2) / 2
+    tu = z_a * math.sqrt(2 * p_tb * (1 - p_tb)) + z_b * math.sqrt(p1 * (1 - p1) + p2 * (1 - p2))
+    return math.ceil(tu ** 2 / (p2 - p1) ** 2)
+
+
+def he_so_thiet_ke(m, icc=ICC):
+    return 1 + (m - 1) * icc
+
+
+def co_mau_hieu_dung(c, m, icc=ICC):
+    """c cụm mỗi nhóm, mỗi cụm m yêu cầu. Luôn nhỏ hơn c / icc."""
+    return c * m / he_so_thiet_ke(m, icc)
+
+
+def m_toi_thieu(n_can, c, icc=ICC):
+    """Số yêu cầu ít nhất mỗi cụm để c cụm đạt n_can hiệu dụng; None nếu không bao giờ đạt (n_can >= c / icc).
+    Giải c·m / (1 + (m − 1)·icc) >= n_can → m >= n_can·(1 − icc) / (c − n_can·icc)."""
+    if n_can >= c / icc:
+        return None
+    return math.ceil(n_can * (1 - icc) / (c - n_can * icc))
+
+
+def power_khi(n, p1, p2):
+    """Power khi có n yêu cầu hiệu dụng mỗi nhóm (statsmodels)."""
+    return NormalIndPower().power(proportion_effectsize(p2, p1), n, ALPHA)
+
+
+def icc_anova(bang, cot, cum):
+    """ICC ước lượng theo phương sai một yếu tố (ANOVA), số yêu cầu mỗi cụm không đều."""
+    nhom = bang.groupby(cum)[cot].agg(['mean', 'size'])
+    n, k = nhom['size'].sum(), len(nhom)
+    giua = (nhom['size'] * (nhom['mean'] - bang[cot].mean()) ** 2).sum() / (k - 1)
+    trong = ((bang[cot] - bang.groupby(cum)[cot].transform('mean')) ** 2).sum() / (n - k)
+    m0 = (n - (nhom['size'] ** 2).sum() / n) / (k - 1)
+    return (giua - trong) / (giua + (m0 - 1) * trong)
+
+
+def bang_d1():
+    tieu_de('D1 · Cỡ mẫu (baseline 0,70; alpha 0,05; power 0,8; ICC 0,02)')
+    n5 = co_mau(P_GOC, P_GOC + MDE_MUC_TIEU)
+    n5_sm = NormalIndPower().solve_power(proportion_effectsize(P_GOC + MDE_MUC_TIEU, P_GOC), alpha=ALPHA, power=POWER)
+    print(f'a) Theo yêu cầu, chênh 5 điểm: {n5:,} mỗi nhóm (statsmodels: {n5_sm:,.1f})')
+
+    m = 75
+    de = he_so_thiet_ke(m)
+    n_cum = math.ceil(n5 * de)
+    nguoi = math.ceil(n_cum / m)
+    print(f'b) Theo nhân viên, m = {m}: DE {de:.2f} · {n_cum:,} mỗi nhóm · {nguoi} nhân viên mỗi nhóm, tổng {nguoi * 2} '
+          f'so với {SO_NHAN_VIEN} → {"đủ" if nguoi * 2 <= SO_NHAN_VIEN else "KHÔNG đủ người"}')
+    for cau, c, ten in [('c', CUM_MOI_NHOM, 'nhân viên'), ('d', 6, 'depot')]:
+        print(f'{cau}) {c} {ten} mỗi nhóm: hiệu dụng tối đa {c / ICC:,.0f} → {"đạt" if c / ICC > n5 else "KHÔNG đạt"} {n5:,}')
+
+    n6 = co_mau(P_GOC, P_GOC + MDE_CHON)
+    m6 = m_toi_thieu(n6, CUM_MOI_NHOM)
+    print(f'e) Chênh 6 điểm cần {n6} mỗi nhóm; {CUM_MOI_NHOM} nhân viên mỗi nhóm → m >= {m6} yêu cầu mỗi người '
+          f'(DE {he_so_thiet_ke(m6):.2f}, hiệu dụng {co_mau_hieu_dung(CUM_MOI_NHOM, m6):.1f}; '
+          f'm = {m6 - 1} chỉ được {co_mau_hieu_dung(CUM_MOI_NHOM, m6 - 1):.1f}) · yêu cầu thật mỗi nhóm {CUM_MOI_NHOM * m6:,}')
+
+
+def chi_phi_theo_xem_lai(runs, pham_vi, ti_le, phut_lam_lai):
+    """Chi phí biến đổi mỗi việc thành công (simulated), tỉ lệ xem lại và tỉ lệ lỗi lọt dự kiến nếu xem lại theo ti_le[loai].
+    Giả định: số lần chạy và số ca sai như đợt chạy thử, xem lại chọn ngẫu nhiên, mỗi lần 5 phút.
+    Ca sai không được xem lại thì bị mở lại, như cả 48 ca sai trong phạm vi của dữ liệu."""
+    kq = mo_hinh(runs, pham_vi)
+    co_lan_ok = runs.loc[runs['status'] == 'ok', 'request_id']
+    ok = pham_vi[pham_vi['request_id'].isin(co_lan_ok)]
+    sai = pham_vi[pham_vi['ket_qua'] == 'lam_lai']
+    so_xem = sum((ok['loai'] == loai).sum() * r for loai, r in ti_le.items())
+    lot = sum((sai['loai'] == loai).sum() * (1 - r) for loai, r in ti_le.items())
+    tong = kq['token'] + kq['tool'] + so_xem * PHUT_XEM_LAI_B4 * LUONG_PHUT + len(sai) * phut_lam_lai * LUONG_PHUT
+    return tong / kq['thanh_cong'], so_xem / len(ok), lot / len(pham_vi)
+
+
+def bang_d3(runs, reqs):
+    pham_vi = reqs[reqs['loai'].isin(PHAM_VI)].copy()
+    pham_vi['chinh'] = ((pham_vi['dong_trong_24h'] == 1) & (pham_vi['mo_lai_trong_7_ngay'] == 0)).astype(int)
+    trong_pham_vi = len(pham_vi) / len(reqs)
+
+    tieu_de('D3 · Thời gian và độ chắc của cách chia 20 + 20 nhân viên, chênh 6 điểm')
+    n6 = co_mau(P_GOC, P_GOC + MDE_CHON)
+    m6 = m_toi_thieu(n6, CUM_MOI_NHOM)
+    moi_ngay = YEU_CAU_THANG / 30 / SO_NHAN_VIEN * trong_pham_vi
+    m_do = math.floor(moi_ngay * SO_NGAY_DO)
+    n_do = co_mau_hieu_dung(CUM_MOI_NHOM, m_do)
+    print(f'Yêu cầu trong phạm vi mỗi nhân viên mỗi ngày: {moi_ngay:.1f} → {m6} yêu cầu cần {m6 / moi_ngay:.1f} ngày '
+          f'(7 ngày chỉ được {moi_ngay * 7:.0f})')
+    print(f'Bước 0.50 dài {SO_NGAY_DO} ngày: m = {m_do} · DE {he_so_thiet_ke(m_do):.2f} · hiệu dụng {n_do:.0f} mỗi nhóm')
+    print(f'Power ở 5 điểm: {power_khi(n6, P_GOC, P_GOC + 0.05):.2f} (hiệu dụng {n6}) · '
+          f'{power_khi(n_do, P_GOC, P_GOC + 0.05):.2f} (hiệu dụng {n_do:.0f}) · ở 6 điểm {power_khi(n_do, P_GOC, P_GOC + 0.06):.2f}')
+    print(f'ICC từ {CUM_MOI_NHOM / n6:.4f} trở lên thì 20 nhân viên mỗi nhóm không bao giờ đủ {n6}; '
+          f'ICC 0,03 tối đa {CUM_MOI_NHOM / 0.03:.0f}')
+    print(f"ICC ước lượng từ đợt chạy thử (chỉ số chính, trong phạm vi): {icc_anova(pham_vi, 'chinh', 'staff_id'):.4f} "
+          f"trên {pham_vi['staff_id'].nunique()} nhân viên, {pham_vi['depot'].nunique()} depot")
+    print(f"Chỉ số chính trong đợt chạy thử: {pham_vi['chinh'].mean() * 100:.2f}% ({pham_vi['chinh'].sum()}/{len(pham_vi)}) trong phạm vi "
+          f"→ đối chứng trên {(pham_vi['chinh'].mean() - MDE_MUC_TIEU) * 100:.1f}% thì khó còn chỗ cho +5 điểm")
+
+    tieu_de('D3 · Tỉ lệ mở lại trong 7 ngày và tỉ lệ bỏ qua gợi ý ở đợt chạy thử')
+    for ten, bang in [('toàn mẫu', reqs), ('phạm vi', pham_vi)] + [(x, pham_vi[pham_vi['loai'] == x]) for x in PHAM_VI]:
+        mo_lai = bang['mo_lai_trong_7_ngay']
+        xem = bang.loc[bang['duoc_xem_lai'] == 1, 'quyet_dinh_xem_lai']
+        bo_qua = xem.isin(['sua', 'bo'])
+        print(f'{ten:10s} mở lại {mo_lai.mean() * 100:5.2f}% ({mo_lai.sum()}/{len(bang)}) · '
+              f'bỏ qua gợi ý {bo_qua.mean() * 100:5.2f}% ({bo_qua.sum()}/{len(xem)}) · được xem lại {len(xem) / len(bang) * 100:.1f}%')
+    sai = pham_vi[pham_vi['ket_qua'] == 'lam_lai']
+    for xem_lai, ten in [(1, 'được xem lại'), (0, 'không xem lại')]:
+        nhom = sai[sai['duoc_xem_lai'] == xem_lai]
+        print(f"Ca lam_lai {ten}: {len(nhom)}, bị mở lại {nhom['mo_lai_trong_7_ngay'].sum()}")
+    co_lan_ok = pham_vi['request_id'].isin(runs.loc[runs['status'] == 'ok', 'request_id'])
+    print(f'Tỉ lệ sai trên yêu cầu chạy ok trong phạm vi: {len(sai) / co_lan_ok.sum() * 100:.2f}% ({len(sai)}/{co_lan_ok.sum()}) · '
+          + ' · '.join(f"{x} {(sai['loai'] == x).sum()}/{(co_lan_ok & (pham_vi['loai'] == x)).sum()}" for x in PHAM_VI))
+
+    tieu_de('D3 · Chi phí theo bậc xem lại ở từng bước mở (simulated)')
+    phut_tb = round(reqs.loc[reqs['ket_qua'] == 'lam_lai', 'phut_lam_lai_simulated'].mean(), 1)
+    kq = mo_hinh(runs, pham_vi)
+    thanh_cong, khong = kq['thanh_cong'], kq['so_yeu_cau'] - kq['thanh_cong']
+    for phan, ti_le in BUOC_MO:
+        cps_9, xem, lot = chi_phi_theo_xem_lai(runs, pham_vi, ti_le, PHUT_LAM_LAI_B4)
+        cps_tb, _, _ = chi_phi_theo_xem_lai(runs, pham_vi, ti_le, phut_tb)
+        yc_thang = YEU_CAU_THANG * trong_pham_vi * phan
+        co_dinh = CO_DINH_THANG / (yc_thang * thanh_cong / len(pham_vi))
+        print(f'Bước {phan:.2f}: xem lại {xem * 100:5.1f}% · biến đổi {cps_9:,.0f} đ (làm lại 9 phút), {cps_tb:,.0f} đ ({phut_tb} phút, '
+              f'{cps_tb / BASELINE:.2f}x) · cố định {co_dinh:,.0f} đ/việc → cộng cố định {cps_tb + co_dinh:,.0f} đ '
+              f'({(cps_tb + co_dinh) / BASELINE:.2f}x) · lỗi lọt dự kiến {lot * 100:.1f}%')
+    for loai in PHAM_VI:
+        cps, _, _ = chi_phi_theo_xem_lai(runs, pham_vi[pham_vi['loai'] == loai], {loai: 1.0}, phut_tb)
+        print(f'Riêng {loai}, xem lại 100%: biến đổi {cps:,.0f} đ ({cps / BASELINE:.2f}x, làm lại {phut_tb} phút)')
+    # Chi phí biến đổi cao nhất mà cả hệ thống + cố định vẫn <= 12.000 đ mỗi yêu cầu khi trợ lý phục vụ nửa khối lượng
+    yc_thang = YEU_CAU_THANG * trong_pham_vi * 0.5
+    tran = ((BASELINE - CO_DINH_THANG / yc_thang) * len(pham_vi) - BASELINE * khong) / thanh_cong
+    print(f'Trần chi phí biến đổi mỗi việc thành công ở bước 0.50 để cả hệ thống + cố định không quá 12.000 đ/yêu cầu: {tran:,.0f} đ')
+
+    tieu_de('D3 · Ngưỡng mở lại: khả năng chạm ngưỡng do ngẫu nhiên nếu trợ lý không kém đối chứng (giả định ICC 0,02)')
+    p = pham_vi['mo_lai_trong_7_ngay'].mean()
+    for phan, ngay in [(0.10, 7), (0.25, 7), (0.50, SO_NGAY_DO)]:
+        n_tl = co_mau_hieu_dung(SO_NHAN_VIEN * phan, moi_ngay * ngay)
+        n_dc = co_mau_hieu_dung(CUM_MOI_NHOM, moi_ngay * ngay)
+        sai_so = math.sqrt(p * (1 - p) * (1 / n_tl + 1 / n_dc))
+        print(f'Bước {phan:.2f}, {ngay} ngày: {SO_NHAN_VIEN * phan:.0f} nhân viên, hiệu dụng {n_tl:.0f} so với {n_dc:.0f} · '
+              f'chênh >= 2 điểm: {(1 - NormalDist().cdf(0.02 / sai_so)) * 100:.1f}%')
+
+
 if __name__ == '__main__':
     runs = pd.read_csv(THU_MUC / 'logix_runs.csv')
     reqs = pd.read_csv(THU_MUC / 'logix_requests.csv', keep_default_na=False)
@@ -255,6 +414,5 @@ if __name__ == '__main__':
     bang_b1_b2(runs, reqs)
     bang_b3(runs, reqs)
     bang_b4(runs, reqs)
-    # TODO CP4 · Nhiệm vụ D: cỡ mẫu.
-    #   from statsmodels.stats.proportion import proportion_effectsize
-    #   from statsmodels.stats.power import NormalIndPower
+    bang_d1()
+    bang_d3(runs, reqs)
