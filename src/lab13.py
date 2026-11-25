@@ -37,6 +37,8 @@ ALPHA, POWER, ICC = 0.05, 0.8, 0.02
 SO_NHAN_VIEN = 40
 CUM_MOI_NHOM = 20               # 20 nhân viên dùng trợ lý, 20 nhân viên đối chứng
 SO_NGAY_DO = 14                 # số ngày của bước 0.50, bước duy nhất dùng để đo chỉ số chính
+NGUONG_CHENH, TRAN_MO_LAI = 0.02, 0.06      # luật dừng 1: hơn đối chứng 2 điểm, hoặc vượt 6%
+NGUONG_SAI = 0.10               # luật dừng 6: tỉ lệ gợi ý sai ở bước 0.10, khi xem lại 100%
 # Các bước mở dần của pilot: (phần nhân viên dùng trợ lý, tỉ lệ xem lại theo loại), khớp pilot_plan.yaml
 BUOC_MO = [(0.10, dict(noi_dia=1.00, hang_nang=1.0)),
            (0.25, dict(noi_dia=0.50, hang_nang=1.0)),
@@ -290,6 +292,11 @@ def power_khi(n, p1, p2):
     return NormalIndPower().power(proportion_effectsize(p2, p1), n, ALPHA)
 
 
+def vuot_nguong(nguong, trung_binh, phuong_sai):
+    """Xác suất một tỉ lệ đo được vượt ngưỡng (xấp xỉ chuẩn)."""
+    return 1 - NormalDist().cdf((nguong - trung_binh) / math.sqrt(phuong_sai))
+
+
 def icc_anova(bang, cot, cum):
     """ICC ước lượng theo phương sai một yếu tố (ANOVA), số yêu cầu mỗi cụm không đều."""
     nhom = bang.groupby(cum)[cot].agg(['mean', 'size'])
@@ -394,14 +401,32 @@ def bang_d3(runs, reqs):
     tran = ((BASELINE - CO_DINH_THANG / yc_thang) * len(pham_vi) - BASELINE * khong) / thanh_cong
     print(f'Trần chi phí biến đổi mỗi việc thành công ở bước 0.50 để cả hệ thống + cố định không quá 12.000 đ/yêu cầu: {tran:,.0f} đ')
 
-    tieu_de('D3 · Ngưỡng mở lại: khả năng chạm ngưỡng do ngẫu nhiên nếu trợ lý không kém đối chứng (giả định ICC 0,02)')
+    tieu_de('D3 · Luật 1: khả năng chạm ngưỡng mở lại do ngẫu nhiên (giả định ICC 0,02, trợ lý không kém đối chứng)')
     p = pham_vi['mo_lai_trong_7_ngay'].mean()
     for phan, ngay in [(0.10, 7), (0.25, 7), (0.50, SO_NGAY_DO)]:
         n_tl = co_mau_hieu_dung(SO_NHAN_VIEN * phan, moi_ngay * ngay)
         n_dc = co_mau_hieu_dung(CUM_MOI_NHOM, moi_ngay * ngay)
-        sai_so = math.sqrt(p * (1 - p) * (1 / n_tl + 1 / n_dc))
+        chenh = vuot_nguong(NGUONG_CHENH, 0, p * (1 - p) * (1 / n_tl + 1 / n_dc))
+        tran_6 = vuot_nguong(TRAN_MO_LAI, p, p * (1 - p) / n_tl)
         print(f'Bước {phan:.2f}, {ngay} ngày: {SO_NHAN_VIEN * phan:.0f} nhân viên, hiệu dụng {n_tl:.0f} so với {n_dc:.0f} · '
-              f'chênh >= 2 điểm: {(1 - NormalDist().cdf(0.02 / sai_so)) * 100:.1f}%')
+              f'chênh >= 2 điểm: {chenh * 100:.1f}% · vượt trần 6%: {tran_6 * 100:.1f}%')
+
+    tieu_de('D3 · Luật 6: tỉ lệ gợi ý sai ở bước 0.10, xem lại 100% (giả định ICC 0,02)')
+    p_sai = len(sai) / co_lan_ok.sum()
+    ok_moi_ngay = moi_ngay * co_lan_ok.mean()
+    nguoi = SO_NHAN_VIEN * BUOC_MO[0][0]
+    print(f'Đợt chạy thử {p_sai * 100:.2f}%, ngưỡng {NGUONG_SAI * 100:.0f}% = {NGUONG_SAI / p_sai:.2f} lần')
+    for ngay in (3, 7):
+        n = co_mau_hieu_dung(nguoi, ok_moi_ngay * ngay)
+        print(f'{ngay} ngày: {nguoi * ok_moi_ngay * ngay:.0f} yêu cầu chạy ok được xem lại, hiệu dụng {n:.0f} · vượt ngưỡng nếu tỉ lệ sai thật là '
+              + ' · '.join(f'{x * 100:.1f}%: {vuot_nguong(NGUONG_SAI, x, x * (1 - x) / n) * 100:.1f}%' for x in (p_sai, 0.10, 0.15)))
+
+    tieu_de('D3 · Luật 5: số ngày bị nhiễm phải bỏ ở bước 0.50')
+    ngay_can = math.ceil(m6 / moi_ngay)
+    print(f'Cần ít nhất {ngay_can} ngày sạch ({moi_ngay * ngay_can:.0f} yêu cầu/người) → trong {SO_NGAY_DO} ngày bỏ được tối đa {SO_NGAY_DO - ngay_can} ngày')
+    for tong_ngay, bo in [(14, 0), (14, 4), (14, 7), (21, 7), (21, 0)]:
+        n = co_mau_hieu_dung(CUM_MOI_NHOM, moi_ngay * (tong_ngay - bo))
+        print(f'{tong_ngay} ngày, bỏ {bo}: m = {moi_ngay * (tong_ngay - bo):.0f}, hiệu dụng {n:.0f} → {"đủ" if n >= n6 else "KHÔNG đủ"} {n6}')
 
 
 if __name__ == '__main__':
